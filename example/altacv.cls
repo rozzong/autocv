@@ -1,0 +1,1 @@
+../templates/altacv.cls
