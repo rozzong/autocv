@@ -31,7 +31,7 @@
 % Settings
 \newcommand{\leftcolumnratio}{
 	% Custom ratio
-	0.25
+	0.24
 	% Golden ratio
 %	\directlua{
 %		local phi = (1 + math.sqrt(5)) / 2
@@ -42,7 +42,7 @@
 
 
 % General layout
-\geometry{left=1cm,right=1cm,top=1cm,bottom=1cm,columnsep=0.75cm}
+\geometry{left=0.75cm,right=0.75cm,top=0.75cm,bottom=0.75cm,columnsep=0.75cm}
 \setlist{nosep}
 
 
@@ -80,12 +80,13 @@
 \titleformat{\section}{\sectionfont}{\thesection}{1em}{\color{heading}\MakeUppercase}[
 	{\color{headingrule}\titlerule[2pt]}
 ]
-\titlespacing{\section}{0pt}{3.5ex plus 0ex minus .2ex}{2.3ex plus .2ex}
+\titlespacing{\section}{0pt}{1.5ex plus 0ex minus .2ex}{2.3ex plus .2ex}
+\renewenvironment{quote}{\color{accent}\itshape\large}{\par}
+\renewcommand{\emph}[1]{\textcolor{accent}{#1}}
 
 
 % Custom elements
-\renewenvironment{quote}{\color{accent}\itshape\large}{\par}
-\newcommand{\divider}{\\\textcolor{body!50}{\hdashrule{\linewidth}{0.6pt}{0.5ex}}\medskip\\}
+\newcommand{\divider}{\textcolor{body!50}{\hdashrule{\linewidth}{0.6pt}{0.5ex}}\medskip\\}
 \newcommand{\link}[2][]{\textcolor{accent}{\href{#2}{\ifstrequal{#1}{}{\faLink}{#1}}}}
 
 
@@ -96,7 +97,7 @@
 \newlength{\headertextwidth}
 \newlength{\consumedlinewidth}
 \newlength{\itemwidth}
-\newcommand{\updatelengths}[2]{
+\newcommand{\updatelengths}[1][\leftcolumnwidth]{
 	% Set column widths
 	\setlength{\leftcolumnwidth}{\leftcolumnratio\dimexpr\linewidth-\columnsep}
 	\setlength{\rightcolumnwidth}{\dimexpr\textwidth-\leftcolumnwidth-\columnsep}
@@ -104,8 +105,8 @@
 	\expandafter\ifstrequal\expandafter{\photo}{}{
 		\setlength{\headertextwidth}{\textwidth}
 	}{
-		\setlength{\headerphotowidth}{\leftcolumnwidth}
-		\setlength{\headertextwidth}{\rightcolumnwidth}
+		\setlength{\headerphotowidth}{#1}
+		\setlength{\headertextwidth}{\dimexpr\textwidth-\headerphotowidth-\columnsep}
 	}
 }
 \setlength{\tabcolsep}{0pt}
@@ -115,6 +116,7 @@
 \renewcommand{\contactinfo}[3][]{
 	\mbox{\textcolor{accent}{#2}~\textcolor{emphasis}{\ifstrequal{#1}{}{#3}{\href{#1#3}{#3}}}}
 }
+\newcommand{\citizenship}[1]{\contactinfo{\faPassport}{#1}}
 \newcommand{\email}[1]{\contactinfo[mailto:]{\faAt}{#1}}
 \newcommand{\phone}[1]{\contactinfo[tel:]{\faPhone}{#1}}
 \newcommand{\location}[1]{\contactinfo[https://www.openstreetmap.org/search?query=]{\faMapMarker}{#1}}
@@ -126,7 +128,7 @@
 \newcommand{\whatsapp}[1]{\contactinfo[https://wa.me/]{\faWhatsapp}{#1}}
 
 \renewcommand{\experience}[5]{
-	{\large\textcolor{emphasis}{#1}}
+	{\large\textcolor{emphasis}{\textbf{#1}}}
 	\ifstrequal{#2}{}{}{\large{\hspace{0.8ex}\textcolor{accent}{@\nobreak\hspace{0.8ex}#2}}}\par
 	\ifstrequal{#3#4}{}{}{
 		\par\medskip\small
@@ -134,7 +136,10 @@
 			\contactinfo{\faCalendar}{#3} & \location{#4}
 		\end{tabularx}\leavevmode
 	}
-	\par\smallskip\normalsize #5
+	\ifstrequal{#5}{}{}{
+		\par\normalsize
+		#5\leavevmode
+	}\par
 }
 
 \renewcommand{\education}[5]{\experience{#1}{#2}{#3}{#4}{#5}}
@@ -142,33 +147,26 @@
 \renewcommand{\award}[4]{\experience{#1}{#2}{#3}{}{#4}}
 
 \renewcommand{\skill}[1]{%
-	\settowidth{\itemwidth}{#1}%
-	\addtolength{\itemwidth}{2ex}%
-	\ifthenelse{%
-		\lengthtest{\dimexpr\consumedlinewidth + \itemwidth > \linewidth}%
-	}{%
-		\par
-		\global\setlength{\consumedlinewidth}{\itemwidth}%
-	}{%
-		\global\addtolength{\consumedlinewidth}{\itemwidth}%
-	}%
-	\tikz[baseline]
-	\node[
-		anchor=base,
-		draw=body,
-		rounded corners,
-		inner xsep=1ex,
-		inner ysep=0.75ex,
-		text height=1.5ex,
-		text depth=.25ex
-	]{#1};
-	\vspace{0.25ex}
+	\begingroup
+		\tikz[baseline]
+		\node[
+			anchor=base,
+			draw=body,
+			rounded corners,
+			inner xsep=1ex,
+			inner ysep=0.75ex,
+			text height=1.5ex,
+			text depth=.25ex
+		]{#1};%
+		\vspace{0.25ex}
+	\endgroup
 }
 
 \renewcommand{\languageskill}[2]{
 	\begin{tabularx}{\linewidth}{Xr}
 		\textcolor{emphasis}{\textbf{#1}} & \textcolor{accent}{\textbf{#2}} 
-	\end{tabularx}\leavevmode
+	\end{tabularx}
+	\par
 }
 
 \renewcommand{\organization}[4]{\experience{#1}{#2}{#3}{}{#4}}
@@ -178,6 +176,7 @@
     \textcolor{accent}{\textbf{#2}}\hspace{0.8ex}%
     \textcolor{emphasis}{--\nobreak\hspace{0.8ex}\textbf{#3}}\\
     #4
+    \par
 }
 
 \renewcommand{\recommendation}[2]{
@@ -198,22 +197,31 @@
 	}
 	\par\normalsize\color{body}
 	#4
+	\par
 }
+
+\renewcommand{\testscore}[2]{\certification{#1}{#2}{}}
+
+\renewcommand{\volunteerexperience}[5]{\experience{#1}{#2}{#3}{#4}{#5}}
 
 
 % Header layout
 \newcommand{\makeheaderphoto}{
-	\begin{minipage}{\headerphotowidth}
-		\tikz\filldraw[
-			color=headingrule,
-			fill overzoom image={\photo},
-			ultra thick
-		](0,0) circle[radius=0.5\headerphotowidth];
-	\end{minipage}
+	\expandafter\ifstrequal\expandafter{\photo}{}{}{
+		\begin{minipage}{\headerphotowidth}		
+			\tikz\filldraw[
+				color=headingrule,
+				fill overzoom image={\photo},
+				ultra thick
+			](0,0) circle[radius=0.5\headerphotowidth];
+		\end{minipage}
+	}
 }
 
 \newcommand{\makeheadertext}{
     \begin{minipage}{\headertextwidth}
+    	\expandafter\ifstrequal\expandafter{\photo}{}{\raggedright}{
+    	\raggedleft}
     	{\namefont\color{name}\MakeUppercase{\firstname\,\middlename\,\lastname}\\}
     	\medskip
     	{\jobtitlefont\color{jobtitle}\jobtitle\\}
@@ -224,10 +232,8 @@
 
 \newcommand{\makeheader}{
 	% Add the photo if a source file was provided
-	\expandafter\ifstrequal\expandafter{\photo}{}{}{
-		\makeheaderphoto
-		\hfill
-	}
+	\makeheaderphoto
+	\hfill
 	\makeheadertext
 }
 
@@ -238,26 +244,28 @@
 	\color{body}	
 	\hypersetup{hidelinks}
     \urlstyle{same}
-    \raggedright    
+    \raggedright
 	\begin{document}
 		\columnratio{\leftcolumnratio}
-		\updatelengths{\leftcolumnratio}{\photo}
-		\makeheader
+		\updatelengths%[2cm]
+		\makeheader  % For a header built in one block
 		\begin{paracol}{2}
-			\makesection{About Me}{\quote{\about}}
+%			\makeheaderphoto  % For column spread headers
+			\makesection{About Me}{\about}
 			\makesection{Skills}{\skills}
-			\makesection[\\\smallskip]{Languages}{\languageskills}
-			\makesection[\\\smallskip]{Certifications}{\certifications}
-			\makesection[\\\smallskip]{Awards}{\awards}
-			\makesection[\\\smallskip]{Test scores}{\testscores}
+			\makesection[\smallskip]{Languages}{\languageskills}
+			\makesection[\smallskip]{Certifications}{\certifications}
+			\makesection[\smallskip]{Awards}{\awards}
+			\makesection[\smallskip]{Test scores}{\testscores}
 			\switchcolumn
+%			\makeheadertext  % For column spread headers
+			\makesection[\divider]{Education}{\educations}			
 			\makesection[\divider]{Experience}{\experiences}		
-			\makesection[\divider]{Education}{\educations}
 			\makesection[\divider]{Volunteering}{\volunteerexperiences}
 		\end{paracol}
 		\makesection[\divider]{Projects}{\projects}
-		\makesection[\\\smallskip]{Publications}{\publications}
-		\makesection[\\\smallskip]{Patents}{\patents}
+		\makesection[\smallskip]{Publications}{\publications}
+		\makesection[\smallskip]{Patents}{\patents}
 		\makesection[\divider]{Organizations}{\organizations}
 	\end{document}
 }

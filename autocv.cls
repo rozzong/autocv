@@ -21,6 +21,7 @@
 \newcommand{\photo}{}
 \newcommand{\about}{}
 
+
 % Item constructors
 \newcommand{\contactinfo}[2]{\ClassWarning{autocv}{Command 'contactinfo' is not defined}}
 \newcommand{\experience}[5]{\ClassWarning{autocv}{Command 'experience' is not defined}}
