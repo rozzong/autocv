@@ -109,3 +109,6 @@
 		\listitems[#1]{#3}
 	}
 }
+
+% CV constructor
+\newcommand{\makecv}{\ClassWarning{autocv}{Command 'makecv' is not defined}}

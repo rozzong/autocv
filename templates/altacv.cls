@@ -239,7 +239,7 @@
 
 
 % Main layout
-\newcommand{\makecv}{	
+\renewcommand{\makecv}{	
 	\pagestyle{empty}
 	\color{body}	
 	\hypersetup{hidelinks}
